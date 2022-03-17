@@ -4,6 +4,21 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+// const divContainer = React.createElement(
+//   'div',
+//   { className: 'flex h-screen bg-gray-100 items-center' },
+//   React.createElement(
+//     'h1',
+//     { className: 'text-center text-xl' },
+//     'Welcome to #react-typescript with #tailwindcss'
+//   ),
+// )
+
+// ReactDOM.render(
+//   divContainer,
+//   document.getElementById('root')
+// );
+
 ReactDOM.render(
   <React.StrictMode>
     <App />
