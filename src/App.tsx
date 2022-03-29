@@ -7,14 +7,30 @@ import './App.css';
 
 function App() {
   const [state, setState] = useState("HOME");
+  
+  const openForm = () => {
+    setState("FORM");
+  }
+  const closeForm = () => {
+    setState("HOME");
+  }
+
+  const formFields = [
+    { id: 1, label: "First Name", type: "text" },
+    { id: 2, label: "Last Name", type: "text" },
+    { id: 3, label: "Email", type: "email" },
+    { id: 4, label: "Date of Birth", type: "date" },
+    { id: 5, label: "Phone Number", type: "tel" },
+  ];
+  
 
   return (
     <AppContainer>
       <Header title={"Welcome to 5 #react-typescript with #tailwindcss"} />
       {
       state === "HOME" ? 
-        (<><Home/> <button className="mt-4 p-2 bg-gray-100 border-2 border-cyan-200 rounded-lg hover:bg-cyan-200 w-full" onClick={()=>setState("FORM")}>Open Form</button></>) : 
-        (<><Form/> <button className="mt-4 p-2 bg-gray-100 border-2 border-cyan-200 rounded-lg hover:bg-cyan-200 w-full" onClick={()=>setState("HOME")}>Close Form</button></>)
+        (<Home openFormCB={openForm}/>) : 
+        (<Form closeFormCB={closeForm} formFields={formFields}/>)
       }
     </AppContainer>
   );
