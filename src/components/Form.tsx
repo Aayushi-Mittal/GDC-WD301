@@ -20,9 +20,10 @@ function Form(props: { closeFormCB: () => void }) {
       {
         id: Number(new Date()),
         label: newField,
-        type: newFieldType
+        type: newFieldType,
       }
     ])
+    setNewField("");
     setNewFieldType("text");
   }
 
@@ -32,9 +33,16 @@ function Form(props: { closeFormCB: () => void }) {
 
   return (
     <div className="mt-6">
+      <form>
       {state.map((field) => (
         <LabelledInput key={field.id} id={field.id} label={field.label} type={field.type} removeFieldCB={removeField} />
       ))}
+      <div className="flex justify-between gap-2">
+        <input type="submit" value="Submit" className="p-2 mt-6 bg-cyan-200 rounded-lg hover:bg-cyan-300 w-1/3" />
+        <input type="reset" value="Reset" className="p-2 mt-6 bg-cyan-200 rounded-lg hover:bg-cyan-300 w-1/3" />
+        <button className="p-2 mt-6 bg-cyan-200 rounded-lg hover:bg-cyan-300 w-1/3" onClick={props.closeFormCB}>Close Form</button>
+      </div>
+      </form>
       <div className="border-2 rounded-lg p-4 mt-5 border-cyan-200">
         <label className="font-semibold">Add Field</label>
         <div className="flex justify-between gap-2">
@@ -55,8 +63,6 @@ function Form(props: { closeFormCB: () => void }) {
           <button className="p-2 mt-2 bg-cyan-200 rounded-lg hover:bg-cyan-300" onClick={addField}>Add</button>
         </div>
       </div>
-      <input type="submit" className="p-2 mt-6 bg-cyan-200 rounded-lg w-full hover:bg-cyan-300" />
-      <button className="p-2 mt-6 bg-cyan-200 rounded-lg hover:bg-cyan-300 w-full" onClick={props.closeFormCB}>Close Form</button>
     </div>
   );
 }
