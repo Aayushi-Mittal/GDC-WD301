@@ -1,4 +1,4 @@
-const LabelledInput = (props: { id: number, label: string, type: string, removeFieldCB: (id: number) => void }) => {
+const LabelledInput = (props: { id: number, label: string, value: string, type: string, removeFieldCB: (id: number) => void, updateInputValueCB: (id: number, value: string) => void }) => {
 
     return (
         <div key={props.id} className="py-2">
@@ -7,8 +7,11 @@ const LabelledInput = (props: { id: number, label: string, type: string, removeF
                 <button className="text-cyan-500" onClick={(_) => { props.removeFieldCB(props.id) }}>Remove Field</button>
             </div>
             <input
-                type={props.type}
+                type={props.type} 
+                value={props.value}
                 className="p-2 bg-gray-100 rounded-lg outline-cyan-500 w-full"
+                onChange={(e) => { props.updateInputValueCB(props.id, e.target.value) }}
+                placeholder={props.label}
             />
         </div>
     )
