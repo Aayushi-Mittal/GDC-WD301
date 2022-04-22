@@ -1,7 +1,14 @@
 import LabelledInput from "./LabelledInput";
 import { useState } from 'react'
 
-const formFields = [
+export interface formField {
+  id: number;
+  label: string;
+  type: string;
+  value: string;
+}
+
+const initialFormFields: formField[] = [
   { id: 1, label: "First Name", type: "text", value:"" },
   { id: 2, label: "Last Name", type: "text", value:"" },
   { id: 3, label: "Email", type: "email", value:"" },
@@ -9,10 +16,18 @@ const formFields = [
   { id: 5, label: "Phone Number", type: "tel", value:"" },
 ];
 
+const initialState: () => formField[] = () => {
+  const formFieldsJSON = localStorage.getItem("formFields");
+  const persistantFormFields = formFieldsJSON ? JSON.parse(formFieldsJSON) : initialFormFields;
+  return persistantFormFields;
+}
+const saveFormData = (currentState: formField[]) => {
+  localStorage.setItem("formFields", JSON.stringify(currentState));
+}
+
 function Form(props: { closeFormCB: () => void }) {
-  const [state, setState] = useState(formFields);
+  const [state, setState] = useState(initialState());
   const [newField, setNewField] = useState("");
-  // const [value, setValue] = useState(""); 
   const [newFieldType, setNewFieldType] = useState("");
 
   const addField = () => {
@@ -52,7 +67,7 @@ function Form(props: { closeFormCB: () => void }) {
         <LabelledInput key={field.id} id={field.id} label={field.label} value={field.value} type={field.type} removeFieldCB={removeField} updateInputValueCB={updateInputValue} />
       ))}
       <div className="flex justify-between gap-2">
-        <input type="submit" value="Submit" className="p-2 mt-6 bg-cyan-200 rounded-lg hover:bg-cyan-300 w-1/3" />
+        <input type="submit" value="Submit" className="p-2 mt-6 bg-cyan-200 rounded-lg hover:bg-cyan-300 w-1/3" onClick={(_) => saveFormData(state)} />
         <button className="p-2 mt-6 bg-cyan-200 rounded-lg hover:bg-cyan-300 w-1/3" onClick={resetForm}>Reset</button>
         <button className="p-2 mt-6 bg-cyan-200 rounded-lg hover:bg-cyan-300 w-1/3" onClick={props.closeFormCB}>Close Form</button>
       </div>
@@ -67,13 +82,26 @@ function Form(props: { closeFormCB: () => void }) {
               e.preventDefault();
               setNewField(e.target.value);
             }} />
-          <input type="text"
+          <select
             className="p-2 mt-2 bg-gray-100 rounded-lg outline-cyan-500 w-2/5"
             placeholder="Enter Field Type"
             onChange={(e) => {
               e.preventDefault();
               setNewFieldType(e.target.value);
-            }} />
+            }}>
+              <option value="text">text</option>
+              <option value="number">number</option>
+              <option value="email">email</option>
+              <option value="url">url</option>
+              <option value="date">date</option>
+              <option value="month">month</option>
+              <option value="week">week</option>
+              <option value="time">time</option>
+              <option value="tel">tel</option>
+              <option value="color">color</option>
+              <option value="file">file</option>
+              <option value="checkbox">checkbox</option>
+            </select>
           <button className="p-2 mt-2 bg-cyan-200 rounded-lg hover:bg-cyan-300" onClick={addField}>Add</button>
         </div>
       </div> 
