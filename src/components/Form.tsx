@@ -1,5 +1,11 @@
 import LabelledInput from "./LabelledInput";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+
+interface formData {
+  id: number;
+  title: string;
+  formFields: formField[];
+}
 
 export interface formField {
   id: number;
@@ -8,31 +14,42 @@ export interface formField {
   value: string;
 }
 
-const initialFormFields: formField[] = [
-  { id: 1, label: "First Name", type: "text", value:"" },
-  { id: 2, label: "Last Name", type: "text", value:"" },
-  { id: 3, label: "Email", type: "email", value:"" },
-  { id: 4, label: "Date of Birth", type: "date", value:"" },
-  { id: 5, label: "Phone Number", type: "tel", value:"" },
-];
+const initialFormFields: formField[] = [];
 
-const initialState: () => formField[] = () => {
-  const formFieldsJSON = localStorage.getItem("formFields");
-  const persistantFormFields = formFieldsJSON ? JSON.parse(formFieldsJSON) : initialFormFields;
-  return persistantFormFields;
+const getLocalForms: () => formData[] = () => {
+    const savedFormsJSON = localStorage.getItem("savedForms")
+    return savedFormsJSON ? JSON.parse(savedFormsJSON) : []
 }
-const saveFormData = (currentState: formField[]) => {
-  localStorage.setItem("formFields", JSON.stringify(currentState));
+
+const saveLocalForms = (localForms: formData[]) => {
+  localStorage.setItem("savedForms", JSON.stringify(localForms))
+}
+
+const saveFormData = (currentState: formData) => {
+  const localForms = getLocalForms();
+  const updatedLocalForms = localForms.map((form) =>
+      form.id === currentState.id ? currentState : form
+  )
+  saveLocalForms(updatedLocalForms);
+
 }
 
 function Form(props: { closeFormCB: () => void }) {
-  const [state, setState] = useState(initialState());
+  // const [selectedformState, setselectedformState] = useState(0);
+  const [state, setState] = useState({
+    id: Number(new Date()),
+    title: "Untitled Form",
+    formFields: initialFormFields
+  })
   const [newField, setNewField] = useState("");
   const [newFieldType, setNewFieldType] = useState("");
+  // const [formList, setFormList] = useState(getLocalForms());
+  const titleRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
       console.log("Component mounted");
       document.title = "Form Editor";
+      titleRef.current?.focus();
       return () => {
           console.log("Component unmounted");
           document.title = "React App";
@@ -51,39 +68,46 @@ function Form(props: { closeFormCB: () => void }) {
   }, [state])
 
   const addField = () => {
-    setState([
+    setState({
       ...state,
-      {
-        id: Number(new Date()),
-        label: newField,
-        type: newFieldType,
-        value: "",
-      }
-    ])
+      formFields: [
+        ...state.formFields,
+        {
+            id: Number(new Date()),
+            label: newField,
+            type: newFieldType,
+            value: ""
+        }
+      ]
+    })
     setNewField("");
     setNewFieldType("text");
   }
 
   const updateInputValue = (id: number, value: string) => {
-    const newState = [...state];
-    const stateObjectIndex = state.findIndex((field) => field.id === id);
+    const newState = [...state.formFields];
+    const stateObjectIndex = state.formFields.findIndex((field) => field.id === id);
     newState[stateObjectIndex] = { ...newState[stateObjectIndex], value };
-    setState(newState);
+    setState({ ...state, formFields: newState});
   }
 
   const removeField = (id: number) => {
-    setState(state.filter((field) => field.id !== id));
+    setState({ ...state, formFields: state.formFields.filter(field => field.id !== id) })
   }
   
   const resetForm = () => {
-    setState(state.map((field) => ({ ...field, value: "" })));
-    console.log(state);
-  };
+    setState({
+        ...state,
+        formFields: state.formFields.map((field) => {
+            return ({ ...field, value: "" })
+        })
+    })
+  }
 
   return (
     <div className="mt-6">
       {/* <form> */}
-      {state.map((field) => (
+      {state.formFields.map((field) => (
         <LabelledInput key={field.id} id={field.id} label={field.label} value={field.value} type={field.type} removeFieldCB={removeField} updateInputValueCB={updateInputValue} />
       ))}
       <div className="flex justify-between gap-2">
