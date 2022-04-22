@@ -1,5 +1,5 @@
 import LabelledInput from "./LabelledInput";
-import { useState } from 'react'
+import React, { useState, useEffect } from "react";
 
 export interface formField {
   id: number;
@@ -29,6 +29,26 @@ function Form(props: { closeFormCB: () => void }) {
   const [state, setState] = useState(initialState());
   const [newField, setNewField] = useState("");
   const [newFieldType, setNewFieldType] = useState("");
+
+  useEffect(() => {
+      console.log("Component mounted");
+      document.title = "Form Editor";
+      return () => {
+          console.log("Component unmounted");
+          document.title = "React App";
+      }
+  }, [])
+
+  useEffect(() => {
+      let timeout = setTimeout(() => {
+          saveFormData(state);
+          console.log("State saved to Local Storage", state)
+      }, 1000)
+      return () => {
+          clearTimeout(timeout)
+      }
+
+  }, [state])
 
   const addField = () => {
     setState([
